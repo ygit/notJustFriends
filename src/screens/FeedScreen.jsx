@@ -11,7 +11,7 @@ const FeedScreen = () => {
     const navigation = useNavigation();
 
     const createPost = () => {
-        navigation.navigate("CreatePost");
+        navigation.navigate("Create Post");
     }
 
     return (

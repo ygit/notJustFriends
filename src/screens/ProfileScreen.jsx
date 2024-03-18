@@ -1,85 +1,180 @@
-import {Text, View, Image, StyleSheet, Pressable} from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    ActivityIndicator,
+    Dimensions,
+    FlatList,
+    Pressable,
+} from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import FeedPost from "../components/FeedPost";
+import {
+    AntDesign,
+    MaterialCommunityIcons,
+    MaterialIcons,
+    Ionicons,
+    Entypo,
+} from "@expo/vector-icons";
 import user from "../../assets/data/user.json";
 
 const dummy_img =
     "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/user.png";
 const bg = "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/1.jpg";
 
-const ProfileScreen = () => {
+const profilePictureWidth = Dimensions.get("window").width * 0.4;
 
-    const addStory = () => {
-      console.warn("Add Story");
+const ProfileScreenHeader = ({ user, isMe = false }) => {
+    const navigation = useNavigation();
+
+    const signOut = async () => {
+        console.warn("Sign out");
+    };
+
+    if (!user) {
+        return <ActivityIndicator />;
     }
 
     return (
         <View style={styles.container}>
-            <View style={styles.imageContainer} >
-                <Image source={{uri: bg}} style={styles.backgroundImage} />
-                <Image source={{uri: dummy_img}} style={styles.profileImage} />
+            <Image source={{ uri: bg }} style={styles.bg} />
+            <Image source={{ uri: user?.image }} style={styles.image} />
+
+            <Text style={styles.name}>{user.name}</Text>
+
+            {isMe && (
+                <>
+                    <View style={styles.buttonsContainer}>
+                        <Pressable
+                            style={[styles.button, { backgroundColor: "royalblue" }]}
+                            onPress={() => navigation.navigate("Create Post")}
+                        >
+                            <AntDesign name="pluscircle" size={16} color="white" />
+                            <Text style={[styles.buttonText, { color: "white" }]}>
+                                Add to Story
+                            </Text>
+                        </Pressable>
+                        <Pressable style={styles.button} onPress={() => console.warn("Edit Profile")} >
+                            <MaterialCommunityIcons name="pencil" size={16} color="black" />
+                            <Text style={styles.buttonText}>Edit Profile</Text>
+                        </Pressable>
+                        <Pressable
+                            onPress={signOut}
+                            style={[styles.button, { flex: 0, width: 50 }]}
+                        >
+                            <MaterialIcons name="logout" size={16} color="black" />
+                        </Pressable>
+                    </View>
+                </>
+            )}
+
+            <View style={styles.textLine}>
+                <Entypo
+                    name="graduation-cap"
+                    size={18}
+                    color="gray"
+                    style={{ width: 25 }}
+                />
+                <Text>Graduated university</Text>
             </View>
-            <Text style={styles.userName}>{user.name}</Text>
-            <View style={styles.actionsContainer}>
-                <View style={styles.action}>
-                    <Pressable onPress={addStory} style={styles.addStory} >
-                        <Text style={{textAlign: "center"}}>Add to Story</Text>
-                    </Pressable>
-                </View>
-                <View style={styles.action}></View>
-                <View style={styles.action}></View>
+
+            <View style={styles.textLine}>
+                <Ionicons name="time" size={18} color="gray" style={{ width: 25 }} />
+                <Text>Joined on October 2013</Text>
+            </View>
+
+            <View style={styles.textLine}>
+                <Entypo
+                    name="location-pin"
+                    size={18}
+                    color="gray"
+                    style={{ width: 25 }}
+                />
+                <Text>From Tenerife</Text>
             </View>
         </View>
-    )
-}
+    );
+};
+
+const ProfileScreen = () => {
+    const route = useRoute();
+
+    console.warn("User: ", route?.params?.id);
+
+    return (
+        <FlatList
+            data={user.posts}
+            renderItem={({ item }) => <FeedPost post={item} />}
+            showsVerticalScrollIndicator={false}
+            ListHeaderComponent={() => (
+                <>
+                    <ProfileScreenHeader user={user} isMe={true} />
+                    <Text style={styles.sectionTitle}>Posts</Text>
+                </>
+            )}
+        />
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "white",
+        alignItems: "center",
+        padding: 10,
     },
-    imageContainer: {
-        position: "relative",
-        margin: 8
-    },
-    backgroundImage: {
+    bg: {
         width: "100%",
-        aspectRatio: 16 / 9,
-        borderTopEndRadius: 36,
-        borderTopStartRadius: 36,
+        height: 200,
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20,
+        marginBottom: -profilePictureWidth / 2,
     },
-    profileImage: {
-        width: 144,
-        height: 144,
-        borderRadius: 72,
-        borderWidth: 2,
+    image: {
+        width: profilePictureWidth,
+        aspectRatio: 1,
+        borderRadius: 500,
+        borderWidth: 5,
         borderColor: "white",
-        position: "absolute",
-        bottom: -72,
-        alignSelf: "center",
     },
-    userName: {
-        marginTop: 64,
-        fontSize: 24,
+    name: {
         fontWeight: "500",
-        alignSelf: "center",
+        fontSize: 16,
+        marginVertical: 5,
     },
-    actionsContainer: {
+    buttonsContainer: {
+        paddingVertical: 5,
         flexDirection: "row",
-        justifyContent: "space-between",
-        margin: 16,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderColor: "lightgray",
     },
-    action: {
-        width: "30%",
-        height: 40,
-        backgroundColor: "royalblue",
-        borderRadius: 8,
+    button: {
+        alignSelf: "stretch",
+        flexDirection: "row",
+        backgroundColor: "gainsboro",
+        margin: 5,
+        padding: 7,
+        flex: 1,
+        alignItems: "center",
         justifyContent: "center",
+        borderRadius: 5,
     },
-    addStory: {
-        borderWidth: 1,
-        borderColor: "#f5f5f5",
-        borderRadius: 8,
-        justifyContent: "center",
-        height: 40,
+    buttonText: {
+        marginHorizontal: 5,
+        fontWeight: "500",
+    },
+    textLine: {
+        alignSelf: "stretch",
+        alignItems: "center",
+        marginVertical: 5,
+        flexDirection: "row",
+    },
+    sectionTitle: {
+        marginLeft: 10,
+        marginVertical: 5,
+        fontWeight: "500",
+        fontSize: 18,
     },
 });
 

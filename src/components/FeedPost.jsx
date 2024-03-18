@@ -1,10 +1,15 @@
-import {Image, StyleSheet, Text, View} from "react-native";
+import {Image, Pressable, StyleSheet, Text, View} from "react-native";
 import {AntDesign, Entypo, FontAwesome5, MaterialCommunityIcons} from "@expo/vector-icons";
 import LikeImage from "../../assets/images/like.png";
 
+import {useNavigation} from "@react-navigation/native";
+
 const FeedPost = ({post}) => {
+
+    const navigation = useNavigation();
+
     return (
-        <View style={styles.post}>
+        <Pressable style={styles.post} onPress={() => navigation.navigate("Profile", {id: post.User.id})}>
             {/* Post Header with details about the author */}
             <View style={styles.header}>
                 <Image
@@ -69,7 +74,7 @@ const FeedPost = ({post}) => {
                     </View>
                 </View>
             </View>
-        </View>
+        </Pressable>
     )
 }
 

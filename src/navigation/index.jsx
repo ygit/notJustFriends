@@ -18,7 +18,7 @@ const Navigator = () => {
                           onPress={() => navigation.navigate("Profile")}
                           name="user"
                           size={24}
-                          color="gray"
+                          color="royalblue"
                       />
                   ),
               })} />
